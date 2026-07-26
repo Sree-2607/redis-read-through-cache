@@ -21,7 +21,7 @@ The application implements a Todo API where:
 
 ## Architecture
 
-
+![Redis Read Through Cache Architecture](docs/architecture.png)
 
 ## Learning Goals
 
