@@ -20,3 +20,12 @@ def get_todo_by_id(todo_id: int):
         if todo.id == todo_id:
             return todo
     raise HTTPException(status_code=404, detail="Todo not found")
+
+@router.put("/todos/{todo_id}", response_model=Todo)
+def update_todo(todo_id: int, updated_todo: Todo):
+    for index, todo in enumerate(todos):
+        if todo.id == todo_id:
+            updated_todo.id = todo_id  # Ensure the ID remains the same
+            todos[index] = updated_todo
+            return updated_todo
+    raise HTTPException(status_code=404, detail="Todo not found")
