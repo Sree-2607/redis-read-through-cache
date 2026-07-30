@@ -29,3 +29,15 @@ def update_todo(todo_id: int, updated_todo: Todo):
             todos[index] = updated_todo
             return updated_todo
     raise HTTPException(status_code=404, detail="Todo not found")
+
+@router.delete("/todos/{todo_id}", status_code=204)
+def delete_todo(todo_id: int):
+    for index, todo in enumerate(todos):
+        if todo.id == todo_id:
+            deleted_todo = todos.pop(index)
+            return{
+                "message": "Todo deleted successfully",
+                "todo": deleted_todo
+            }
+    raise HTTPException(status_code=404, detail="Todo not found")
+
