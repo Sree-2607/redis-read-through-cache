@@ -1,42 +1,18 @@
 from fastapi import APIRouter, HTTPException
 from .models import Todo
-
+from .cache_service import get_todo
 
 router = APIRouter()
-todos: list[Todo] = []
 
-@router.post("/todos", response_model=Todo, status_code=201)
-def create_todo(todo: Todo):
-    todos.append(todo)
+@router.get("/todos/{todo_id}")
+def read_todo(todo_id:int):
+
+    todo = get_todo(str(todo_id))
+
+    if todo is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Todo not found"
+        )
+
     return todo
-
-@router.get("/todos", response_model=list[Todo])
-def get_todos():
-    return todos
-
-@router.get("/todos/{todo_id}", response_model=Todo)
-def get_todo_by_id(todo_id: int):
-    for todo in todos:
-        if todo.id == todo_id:
-            return todo
-    raise HTTPException(status_code=404, detail="Todo not found")
-
-@router.put("/todos/{todo_id}", response_model=Todo)
-def update_todo(todo_id: int, updated_todo: Todo):
-    for index, todo in enumerate(todos):
-        if todo.id == todo_id:
-            updated_todo.id = todo_id  # Ensure the ID remains the same
-            todos[index] = updated_todo
-            return updated_todo
-    raise HTTPException(status_code=404, detail="Todo not found")
-
-@router.delete("/todos/{todo_id}", status_code=204)
-def delete_todo(todo_id: int):
-    for index, todo in enumerate(todos):
-        if todo.id == todo_id:
-            deleted_todo = todos.pop(index)
-            return{
-                "message": "Todo deleted successfully",
-                "todo": deleted_todo
-            }
-    raise HTTPException(status_code=404, detail="Todo not found")
