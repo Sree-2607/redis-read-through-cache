@@ -1,10 +1,12 @@
+# Redis snapshots
+dump.rdb
+*.rdb
+
+# Python environments
+venv/
+.venv/
 __pycache__/
 *.pyc
 
+# Local environment configuration
 .env
-
-.venv/
-
-.idea/
-
-.vscode/
