@@ -1,29 +1,15 @@
-from .redis_client import redis_client
+from .read_through_cache import ReadThroughCache
+from .repository import get_todo_by_id
 
-fake_database = {
-    "1": {
-        "title": "Learn Redis",
-        "description": "Understand caching",
-        "completed": "false"
-    }
-}
+todo_cache = ReadThroughCache(ttl=60)
 
-def get_todo(todo_id):
-    # 1. Check Redis first
-    cached_todo = redis_client.hgetall(
-        f"todo:{todo_id}"
+def get_todo(todo_id: int):
+    cache_key = f"todo:{todo_id}"
+    return todo_cache.get(
+        key=cache_key,
+        loader=lambda: get_todo_by_id(todo_id)
     )
-    if cached_todo:
-        print("CACHE HIT")
-        return cached_todo
 
-    # 2. Cache miss
-    print("CACHE MISS")
-    todo = fake_database.get(todo_id)
-    if todo:
-
-        redis_client.hset(
-            f"todo:{todo_id}",
-            mapping=todo
-        )
-    return todo
+def invalidate_todo(todo_id: int):
+    cache_key = f"todo:{todo_id}"
+    todo_cache.invalidate(cache_key)
